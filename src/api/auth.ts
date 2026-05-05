@@ -31,19 +31,18 @@ export async function fetchMe(): Promise<UserProfile> {
   return data
 }
 
-export async function logoutServer(): Promise<void> {
-  const { accessToken, refreshToken, clear } = useAuthStore.getState()
+export async function revokeSessionOnServer(): Promise<void> {
+  const { accessToken, refreshToken } = useAuthStore.getState()
+  if (!accessToken || !refreshToken) return
   try {
-    if (accessToken && refreshToken) {
-      await api.post<LogoutResponse>(
-        '/auth/logout',
-        { refresh_token: refreshToken },
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      )
-    }
-  } finally {
-    clear()
+    await api.post<LogoutResponse>(
+      '/auth/logout',
+      { refresh_token: refreshToken },
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+  } catch {
+    void 0
   }
 }

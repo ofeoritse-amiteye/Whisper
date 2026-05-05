@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { logoutServer } from '../api/auth'
+import { revokeSessionOnServer } from '../api/auth'
 import { MessageThread } from '../components/chat/MessageThread'
 import { NewConversationModal } from '../components/chat/NewConversationModal'
 import { Sidebar } from '../components/chat/Sidebar'
@@ -10,9 +10,12 @@ import { useSendMessage } from '../hooks/useSendMessage'
 import { useWebSocket } from '../hooks/useWebSocket'
 import type { ApiMessage } from '../types/api'
 import { useChatStore } from '../store/chatStore'
+import { useAuthStore } from '../store/authStore'
 
 export function ChatPage() {
   const navigate = useNavigate()
+  const setLoggingOut = useAuthStore((s) => s.setLoggingOut)
+  const clear = useAuthStore((s) => s.clear)
   const { isLoading: conversationsLoading } = useConversations()
 
   const activeId = useChatStore((s) => s.activeConversationUserId)
@@ -67,9 +70,11 @@ export function ChatPage() {
   const [compose, setCompose] = useState(false)
 
   async function handleLogout() {
+    setLoggingOut(true)
     try {
-      await logoutServer()
+      await revokeSessionOnServer()
     } finally {
+      clear()
       navigate('/login', { replace: true })
     }
   }

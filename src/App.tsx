@@ -3,6 +3,7 @@ import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { useAuthStore } from './store/authStore'
 import { ToastProvider } from './components/ui/Toast'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { LogoutOverlay } from './components/ui/LogoutOverlay'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { ChatPage } from './pages/ChatPage'
@@ -33,6 +34,7 @@ export default function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ToastProvider>
+          <LogoutOverlay />
           <Routes>
             <Route element={<GuestRoute />}>
               <Route path="/login" element={<LoginPage />} />

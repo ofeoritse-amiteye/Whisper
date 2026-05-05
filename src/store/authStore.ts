@@ -8,6 +8,8 @@ export interface AuthState {
   accessToken: string | null
   refreshToken: string | null
   isAuthenticated: boolean
+  isLoggingOut: boolean
+  setLoggingOut: (v: boolean) => void
   setSession: (args: {
     user: UserProfile
     accessToken: string
@@ -27,6 +29,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
+  isLoggingOut: false,
+
+  setLoggingOut: (v) => set({ isLoggingOut: v }),
 
   setSession: ({ user, accessToken, refreshToken, privateKey, publicKey }) =>
     set({

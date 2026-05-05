@@ -1,7 +1,14 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { LoginForm } from '../components/auth/LoginForm'
+import { useAuthStore } from '../store/authStore'
 
 export function LoginPage() {
+  const setLoggingOut = useAuthStore((s) => s.setLoggingOut)
+  useEffect(() => {
+    setLoggingOut(false)
+  }, [setLoggingOut])
+
   return (
     <div className="relative flex min-h-[100dvh] flex-col items-center justify-center overflow-x-hidden bg-page px-5 py-10">
       <div className="relative z-10 w-full max-w-md">

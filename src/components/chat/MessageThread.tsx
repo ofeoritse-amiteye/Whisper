@@ -74,7 +74,7 @@ export function MessageThread({
           </div>
           <p className="text-sm font-medium text-zinc-200">Pick a conversation</p>
           <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-muted">
-            Choose someone from the list — every message stays encrypted until it reaches them.
+            Choose someone from the list, every message stays encrypted until it reaches them.
           </p>
         </div>
       </div>

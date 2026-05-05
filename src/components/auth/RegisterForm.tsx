@@ -19,6 +19,24 @@ import {
 import { Spinner } from '../ui/Spinner'
 import { useToast } from '../ui/useToast'
 
+function extractApiErrorDetail(data: unknown): string | undefined {
+  if (data === null || data === undefined || typeof data !== 'object') return undefined
+  const detail = (data as { detail?: unknown }).detail
+  if (typeof detail === 'string') return detail
+  if (Array.isArray(detail)) {
+    const parts: string[] = []
+    for (const item of detail) {
+      if (typeof item === 'string') parts.push(item)
+      else if (item && typeof item === 'object' && 'msg' in item) {
+        const msg = (item as { msg?: unknown }).msg
+        if (typeof msg === 'string') parts.push(msg)
+      }
+    }
+    return parts.length > 0 ? parts.join(' ') : undefined
+  }
+  return undefined
+}
+
 export function RegisterForm() {
   const navigate = useNavigate()
   const setSession = useAuthStore((s) => s.setSession)
@@ -28,6 +46,7 @@ export function RegisterForm() {
   const [displayName, setDisplayName] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [busyStep, setBusyStep] = useState<'idle' | 'crypto' | 'network'>('idle')
   const [usernameError, setUsernameError] = useState<string | null>(null)
   const [fieldError, setFieldError] = useState<string | null>(null)
 
@@ -53,6 +72,7 @@ export function RegisterForm() {
     }
 
     setLoading(true)
+    setBusyStep('crypto')
     try {
       const { publicKey, privateKey } = await generateKeyPair()
       const salt = generateSalt(16)
@@ -62,6 +82,7 @@ export function RegisterForm() {
       const wrapped_private_key = bufferToBase64(wrappedBuf)
       const pbkdf2_salt = bufferToBase64(salt)
 
+      setBusyStep('network')
       const data = await registerAccount({
         username: username.trim(),
         display_name: displayName.trim(),
@@ -84,18 +105,41 @@ export function RegisterForm() {
       })
       navigate('/')
     } catch (err) {
-      if (isAxiosError(err) && err.response?.status === 409) {
-        setUsernameError('Username already taken')
+      if (isAxiosError(err)) {
+        const status = err.response?.status
+        const body = err.response?.data
+        const detail = extractApiErrorDetail(body)
+
+        if (status === 409) {
+          setUsernameError('Username already taken')
+          return
+        }
+        if (status === 400 || status === 422) {
+          setFieldError(
+            detail ??
+              (status === 422
+                ? 'Please check your inputs and try again.'
+                : 'Registration failed'),
+          )
+          return
+        }
+        if (err.response === undefined) {
+          setFieldError(
+            'Could not reach the server. This often happens when your deployed site is blocked by the API (CORS) or the API is down. Try DevTools → Network on the failed register request.',
+          )
+          toast.error('Connection failed')
+          return
+        }
+        setFieldError(
+          detail ?? `Registration failed (error ${String(status)}). Try again later.`,
+        )
         return
       }
-      if (isAxiosError(err) && err.response?.status === 400) {
-        const detail = err.response?.data as { detail?: string }
-        setFieldError(detail?.detail ?? 'Registration failed')
-        return
-      }
-      toast.error('Registration failed')
+      const msg = err instanceof Error ? err.message : 'Registration failed'
+      setFieldError(msg)
     } finally {
       setLoading(false)
+      setBusyStep('idle')
     }
   }
 
@@ -150,6 +194,15 @@ export function RegisterForm() {
         <p className="rounded-xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm text-red-300">
           {fieldError}
         </p>
+      ) : null}
+      {loading && busyStep === 'crypto' ? (
+        <p className="text-center text-xs leading-relaxed text-muted sm:text-left">
+          Creating encryption keys in your browser (RSA + password stretch). This can take a few
+          seconds — the server is only contacted after that.
+        </p>
+      ) : null}
+      {loading && busyStep === 'network' ? (
+        <p className="text-center text-xs text-muted sm:text-left">Talking to WhisperBox server…</p>
       ) : null}
       <button
         type="submit"

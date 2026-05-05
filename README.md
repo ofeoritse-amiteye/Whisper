@@ -1,6 +1,6 @@
 # WhisperBox
 
-WhisperBox is an end-to-end encrypted messaging web app. The React + TypeScript client uses the Web Crypto API in the browser to generate an RSA key pair, wrap the private key with a password-derived AES-KW key, and exchange messages using hybrid encryption (AES-GCM + RSA-OAEP). The server at `https://whisperbox.koyeb.app` only ever sees ciphertext.
+WhisperBox is an end-to-end encrypted messaging web app. The React + TypeScript client uses the Web Crypto API in the browser to generate an RSA key pair, protect the PKCS#8 private key with a password-derived AES-GCM envelope (legacy accounts may still use AES-KW unwrap), and exchange messages using hybrid encryption (AES-GCM + RSA-OAEP). The server at `https://whisperbox.koyeb.app` only ever sees ciphertext.
 
 ## Development
 
@@ -40,8 +40,8 @@ sequenceDiagram
 
 1. Generate an RSA-OAEP 2048-bit key pair (SHA-256, public exponent 65537).
 2. Generate a random 16-byte PBKDF2 salt.
-3. Derive an AES-KW 256-bit key from the password using PBKDF2 (SHA-256, 310,000 iterations) and the salt.
-4. Wrap the RSA private key (PKCS#8) with AES-KW.
+3. Derive a 256-bit AES key from the password using PBKDF2 (SHA-256, 310,000 iterations) and the salt.
+4. Export the RSA private key as PKCS#8, encrypt it with **AES-GCM** (random 12-byte IV, 128-bit tag), prefix a short `WB2` magic — then base64 — so PKCS#8 length does not need to satisfy AES-KW’s multiple-of‑8‑byte constraint. **Login** still supports legacy blobs produced with AES-KW.
 5. Export the public key as SPKI and base64-encode SPKI, wrapped private key, and salt.
 6. Send `POST /auth/register` with username, display name, password, and the three base64 fields.
 7. Store the unwrapped `CryptoKey` objects and tokens **only in memory** (Zustand).
@@ -49,7 +49,7 @@ sequenceDiagram
 ### Login
 
 1. `POST /auth/login` returns tokens and the user profile (including wrapped private key and salt).
-2. Decode the salt, derive the same AES-KW wrapping key from the password, unwrap the private key, and import the RSA private `CryptoKey`.
+2. Decode the salt, derive AES keys from the password with the same PBKDF2 parameters, decrypt the PKCS#8 private key (**AES-GCM** for current `WB2` envelopes; **AES-KW** unwrap for older accounts), and import the RSA private `CryptoKey`.
 3. Import the RSA public key from the stored SPKI (base64) for encrypting the “copy for self” of each message key.
 4. Keep passwords and unwrapped keys out of persistent storage.
 
@@ -73,7 +73,7 @@ sequenceDiagram
 | What | Where stored | Form |
 |------|----------------|------|
 | RSA private key | Zustand memory (session only) | `CryptoKey` object |
-| RSA wrapped private key | Server (via `/auth/login` user object) | AES-KW wrapped PKCS#8, base64 |
+| RSA wrapped private key | Server (via `/auth/login` user object) | Password-protected PKCS#8 (AES-GCM envelope today; AES-KW legacy), base64 |
 | PBKDF2 salt | Server (via user profile) | base64 |
 | RSA public key | Server | base64 SPKI |
 | AES-GCM message key | Never stored | Ephemeral per message |

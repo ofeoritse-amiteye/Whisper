@@ -2,7 +2,6 @@ import { type FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginAccount } from '../../api/auth'
 import { base64ToBuffer } from '../../crypto/utils'
-import { deriveWrappingKey } from '../../crypto/pbkdf2'
 import { unwrapPrivateKey, importOwnPublicKeyFromSpkiBase64 } from '../../crypto/keys'
 import { useAuthStore } from '../../store/authStore'
 import { Spinner } from '../ui/Spinner'
@@ -30,10 +29,10 @@ export function LoginForm() {
     try {
       const data = await loginAccount({ username: u, password })
       const salt = new Uint8Array(base64ToBuffer(data.user.pbkdf2_salt))
-      const wrappingKey = await deriveWrappingKey(password, salt)
       const privateKey = await unwrapPrivateKey(
         data.user.wrapped_private_key,
-        wrappingKey,
+        password,
+        salt,
       )
       const publicKey = await importOwnPublicKeyFromSpkiBase64(data.user.public_key)
       setSession({

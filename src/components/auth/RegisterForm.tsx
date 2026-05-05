@@ -3,7 +3,6 @@ import { type FormEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { registerAccount } from '../../api/auth'
 import { bufferToBase64, generateSalt } from '../../crypto/utils'
-import { deriveWrappingKey } from '../../crypto/pbkdf2'
 import {
   exportPublicKeyBase64,
   generateKeyPair,
@@ -76,8 +75,7 @@ export function RegisterForm() {
     try {
       const { publicKey, privateKey } = await generateKeyPair()
       const salt = generateSalt(16)
-      const wrappingKey = await deriveWrappingKey(password, salt)
-      const wrappedBuf = await wrapPrivateKey(privateKey, wrappingKey)
+      const wrappedBuf = await wrapPrivateKey(privateKey, password, salt)
       const public_key = await exportPublicKeyBase64(publicKey)
       const wrapped_private_key = bufferToBase64(wrappedBuf)
       const pbkdf2_salt = bufferToBase64(salt)

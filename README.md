@@ -101,6 +101,9 @@ The trade-offs above apply, plus: no read receipts, no typing indicators, no att
 - TanStack Query v5, Zustand, React Router, Axios with refresh interceptor
 - WebSocket `wss://whisperbox.koyeb.app/ws?token=…` for real-time messaging and presence
 
-## API base URL
+## API
 
-All calls use `https://whisperbox.koyeb.app` as documented in the application contracts in source (`src/api/`).
+The client targets `https://whisperbox.koyeb.app` (`src/api/client.ts`). REST and WebSocket behavior match the published specification.
+
+- [Interactive docs](https://whisperbox.koyeb.app/docs)
+- [OpenAPI JSON](https://whisperbox.koyeb.app/openapi.json)

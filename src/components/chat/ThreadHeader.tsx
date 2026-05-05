@@ -15,15 +15,17 @@ export function ThreadHeader({
   const connected = useChatStore((s) => s.wsConnected)
 
   return (
-    <header className="flex items-center justify-between border-b border-border bg-thread px-4 py-3">
+    <header className="sticky top-0 z-[2] flex items-center justify-between border-b border-white/10 bg-black/25 px-4 py-3 backdrop-blur-2xl">
       <div className="flex min-w-0 items-center gap-3">
-        <Avatar displayName={displayName} username={username} size="md" />
+        <Avatar displayName={displayName} username={username} size="lg" />
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h2 className="truncate text-base font-semibold">{displayName}</h2>
+            <h2 className="truncate text-base font-semibold tracking-tight text-white">
+              {displayName}
+            </h2>
             <span
-              className={`h-2.5 w-2.5 rounded-full ${
-                online ? 'bg-success' : 'bg-placeholder'
+              className={`h-2.5 w-2.5 shrink-0 rounded-full border border-black/40 ${
+                online ? 'bg-success' : 'bg-zinc-600'
               }`}
               title={online ? 'Online' : 'Offline'}
               aria-hidden
@@ -31,12 +33,9 @@ export function ThreadHeader({
           </div>
           <div className="truncate text-xs text-muted">@{username}</div>
         </div>
-        <span className="hidden items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted md:inline-flex">
-          🔒 Encrypted
-        </span>
       </div>
-      <div className="text-xs text-muted">
-        {!connected || reconnecting ? 'Reconnecting…' : null}
+      <div className="shrink-0 text-[11px] text-muted">
+        {!connected || reconnecting ? 'Reconnecting…' : ''}
       </div>
     </header>
   )

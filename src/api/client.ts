@@ -1,14 +1,9 @@
-import axios, {
-  type AxiosError,
-  type AxiosInstance,
-  type InternalAxiosRequestConfig,
-} from 'axios'
+import axios, {type AxiosError,type AxiosInstance,type InternalAxiosRequestConfig,} from 'axios'
 import { useAuthStore } from '../store/authStore'
 import type { RefreshResponse } from '../types/api'
 
 export const API_BASE = 'https://whisperbox.koyeb.app'
 
-/** Plain axios for refresh to avoid interceptor recursion. */
 const plain = axios.create({
   baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },

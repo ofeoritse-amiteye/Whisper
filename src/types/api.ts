@@ -11,14 +11,14 @@ export interface UserProfile {
 export interface AuthTokens {
   access_token: string
   refresh_token: string
-  token_type: string
+  token_type?: string
   expires_in: number
   user: UserProfile
 }
 
 export interface RefreshResponse {
   access_token: string
-  token_type: string
+  token_type?: string
   expires_in: number
 }
 
@@ -26,7 +26,7 @@ export interface ConversationSummary {
   user_id: string
   display_name: string
   username: string
-  last_message_at: string
+  last_message_at: string | null
 }
 
 export interface MessagePayloadWire {

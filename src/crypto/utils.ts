@@ -1,5 +1,3 @@
-/** Web Crypto helpers — no Math.random(). */
-
 export function bufferToBase64(buffer: ArrayBuffer | ArrayBufferView): string {
   const bytes =
     buffer instanceof ArrayBuffer

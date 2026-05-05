@@ -40,14 +40,14 @@ export function MessageInput({
 
   return (
     <form
-      className="border-t border-border bg-thread px-4 py-3"
+      className="border-t border-white/10 bg-black/30 px-4 py-4 backdrop-blur-2xl"
       onSubmit={onSubmit}
     >
-      <div className="flex items-end gap-2">
+      <div className="mx-auto flex max-w-5xl items-center gap-3">
         <textarea
-          className="min-h-[44px] flex-1 resize-none rounded-lg border border-border bg-surface px-3 py-2 text-sm text-white placeholder:text-placeholder outline-none focus:border-accent"
-          placeholder="Message… (Shift+Enter for newline)"
-          rows={2}
+          className="wb-glass-inset wb-focus min-h-[48px] flex-1 resize-none rounded-[1rem] px-4 py-3 text-left text-[15px] leading-normal text-white placeholder:text-placeholder"
+          placeholder="Message… Shift+Enter for newline"
+          rows={1}
           value={value}
           disabled={disabled}
           onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -58,7 +58,7 @@ export function MessageInput({
         <button
           type="submit"
           disabled={disabled || empty || Boolean(err)}
-          className="mb-0.5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-40"
+          className="wb-btn-primary shrink-0 rounded-xl px-6 py-3 text-[15px] font-medium text-white disabled:pointer-events-none"
         >
           Send
         </button>

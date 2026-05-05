@@ -9,16 +9,16 @@ import { ThreadHeader } from './ThreadHeader'
 
 function SkeletonThread() {
   return (
-    <div className="flex flex-col gap-2 px-4 py-4">
+    <div className="flex flex-col gap-2 px-3 py-4 md:px-5">
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <div
           key={i}
           className={`flex ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}
         >
           <div
-            className={`h-12 w-2/3 animate-pulse rounded-2xl ${
-              i % 2 === 0 ? 'bg-surface' : 'bg-accent/40'
-            }`}
+            className={`h-11 w-[68%] max-w-xs animate-pulse rounded-2xl ${
+              i % 2 === 0 ? 'bg-white/[0.08]' : 'bg-accent/20'
+            } backdrop-blur-sm`}
           />
         </div>
       ))}
@@ -67,21 +67,29 @@ export function MessageThread({
 
   if (!peerUserId) {
     return (
-      <div className="flex flex-1 items-center justify-center bg-thread text-sm text-muted">
-        Select a conversation to start messaging.
+      <div className="flex flex-1 items-center justify-center bg-page p-6">
+        <div className="wb-glass max-w-sm rounded-[1.5rem] px-8 py-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-2xl">
+            ◇
+          </div>
+          <p className="text-sm font-medium text-zinc-200">Pick a conversation</p>
+          <p className="mx-auto mt-2 max-w-xs text-xs leading-relaxed text-muted">
+            Choose someone from the list — every message stays encrypted until it reaches them.
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col bg-thread">
-      <div className="flex items-center gap-2 border-b border-border px-2 py-2 md:hidden">
+    <section className="flex min-h-0 flex-1 flex-col bg-page">
+      <div className="flex items-center gap-2 border-b border-white/10 bg-black/20 px-2 py-2 backdrop-blur-xl md:hidden">
         <button
           type="button"
-          className="rounded-lg px-2 py-1 text-sm text-muted hover:bg-surfaceHover"
+          className="wb-btn-ghost rounded-xl px-3 py-2 text-xs font-medium text-zinc-300"
           onClick={() => setPane('sidebar')}
         >
-          ← Back
+          ← Chats
         </button>
       </div>
       <ThreadHeader
@@ -91,11 +99,13 @@ export function MessageThread({
       />
       <EncryptedBanner />
       <div
-        className="min-h-0 flex-1 overflow-y-auto px-2 py-4 md:px-4"
+        className="relative min-h-0 flex-1 overflow-y-auto px-2 py-4 md:px-5"
         onScroll={onScroll}
       >
         {isFetchingNextPage ? (
-          <div className="py-2 text-center text-xs text-muted">Loading older…</div>
+          <div className="sticky top-0 z-[1] py-3 text-center text-[11px] text-muted backdrop-blur-sm">
+            Loading older messages…
+          </div>
         ) : null}
         {loading ? <SkeletonThread /> : null}
         {!loading &&

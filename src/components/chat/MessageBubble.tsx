@@ -21,33 +21,33 @@ export function MessageBubble({
   const sending = message.sendState === 'sending'
   const failed = message.sendState === 'error'
 
+  const bubbleCls = `${isMine ? 'wb-bubble-sent' : 'wb-bubble-received'} shadow-[inset_0_1px_0_rgb(255_255_255/0.08)]`
+
   return (
     <div
-      className={`flex w-full ${isMine ? 'justify-end' : 'justify-start'} ${
-        showMeta ? 'mt-3' : 'mt-1'
+      className={`flex w-full px-1 ${isMine ? 'justify-end' : 'justify-start'} ${
+        showMeta ? 'mt-4' : 'mt-1'
       }`}
     >
       <div
-        className={`max-w-[min(560px,85%)] px-3 py-2 ${
-          isMine
-            ? 'bg-accent rounded-2xl rounded-tr-sm'
-            : 'bg-surface rounded-2xl rounded-tl-sm'
-        } ${sending ? 'opacity-80' : ''}`}
+        className={`max-w-[min(540px,88%)] px-4 py-2.5 ${bubbleCls} shadow-[inset_0_1px_0_rgb(255_255_255/0.08)] ${
+          sending ? 'opacity-85' : ''
+        } ${isMine ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tl-sm'}`}
       >
         {message.decryptFailed ? (
-          <p className="text-sm text-danger">🔒 Unable to decrypt this message</p>
+          <p className="text-sm text-red-300/95">🔒 Unable to decrypt this message</p>
         ) : (
-          <p className="whitespace-pre-wrap break-words text-sm text-white">
+          <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed text-zinc-100">
             {message.plainText ?? ''}
           </p>
         )}
-        <div className="mt-1 flex items-center gap-2 text-[11px] text-white/70">
-          {sending ? <Spinner className="h-3 w-3 border-t-white" /> : null}
-          <time className="text-muted">{formatTime(message.created_at)}</time>
+        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-white/65">
+          {sending ? <Spinner className="h-3.5 w-3.5 border-zinc-500 border-t-white" /> : null}
+          <time className="tabular-nums text-zinc-500">{formatTime(message.created_at)}</time>
           {failed && onRetry && message.plainText ? (
             <button
               type="button"
-              className="text-xs text-white underline"
+              className="rounded-md border border-white/15 bg-white/5 px-2 py-0.5 font-medium text-zinc-200 transition-colors hover:border-white/25 hover:bg-white/10 hover:text-white"
               onClick={() => onRetry(message.plainText!, message.id)}
             >
               Retry

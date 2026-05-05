@@ -35,7 +35,6 @@ export async function importPublicKeyFromSpkiBase64(
   return crypto.subtle.importKey('spki', buf, RSA_OAEP_PARAMS, false, ['encrypt'])
 }
 
-/** Import own RSA public key for encrypting AES key for self (sent message history). */
 export async function importOwnPublicKeyFromSpkiBase64(
   base64Spki: string,
 ): Promise<CryptoKey> {

@@ -60,16 +60,14 @@ export class WhisperBoxWebSocket {
           this.onPresenceCb(evName, (data as { user_id: string }).user_id)
         } else if (evName === 'error') {
           this.onMessageCb(data)
-        } else {
-          // Unknown events ignored
         }
       } catch {
-        // malformed payload
+        void 0
       }
     }
 
     this.socket.onerror = () => {
-      // connection error — close handler will reconnect
+      void 0
     }
 
     this.socket.onclose = () => {
@@ -107,7 +105,6 @@ export class WhisperBoxWebSocket {
     }
   }
 
-  /** Reconnect with a fresh token (e.g. after HTTP refresh). */
   reconnect(): void {
     this.disconnect(false)
     this.closedByUser = false
@@ -146,7 +143,7 @@ export class WhisperBoxWebSocket {
       try {
         this.socket.close()
       } catch {
-        // ignore
+        void 0
       }
       this.socket = null
     }

@@ -3,9 +3,7 @@ import type { UserProfile } from '../types/api'
 
 export interface AuthState {
   user: UserProfile | null
-  /** RSA private key — memory only */
   privateKey: CryptoKey | null
-  /** Own RSA public key for encrypting AES key for self */
   publicKey: CryptoKey | null
   accessToken: string | null
   refreshToken: string | null

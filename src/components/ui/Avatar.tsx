@@ -1,12 +1,12 @@
 const PALETTE = [
-  'bg-red-600',
-  'bg-orange-500',
-  'bg-amber-500',
-  'bg-emerald-600',
-  'bg-cyan-600',
-  'bg-blue-600',
-  'bg-accent',
-  'bg-fuchsia-600',
+  'bg-red-700/95',
+  'bg-orange-600/95',
+  'bg-amber-600/95',
+  'bg-emerald-700/95',
+  'bg-teal-700/95',
+  'bg-blue-700/95',
+  'bg-violet-600/95',
+  'bg-fuchsia-700/95',
 ]
 
 function hashUsername(username: string): number {
@@ -32,9 +32,9 @@ function initials(name: string): string {
 export type AvatarSize = 'sm' | 'md' | 'lg'
 
 const sizeClass: Record<AvatarSize, string> = {
-  sm: 'h-7 w-7 text-xs',
-  md: 'h-9 w-9 text-sm',
-  lg: 'h-11 w-11 text-base',
+  sm: 'h-7 w-7 text-[10px]',
+  md: 'h-9 w-9 text-xs',
+  lg: 'h-11 w-11 text-sm',
 }
 
 export function Avatar({
@@ -49,7 +49,7 @@ export function Avatar({
   const bg = PALETTE[hashUsername(username) % PALETTE.length]
   return (
     <div
-      className={`flex shrink-0 items-center justify-center rounded-full font-semibold text-white ${bg} ${sizeClass[size]}`}
+      className={`flex shrink-0 items-center justify-center rounded-full border border-white/15 bg-clip-padding font-semibold leading-none tracking-tighter text-white shadow-inner ${bg} ${sizeClass[size]}`}
       aria-hidden
     >
       {initials(displayName)}

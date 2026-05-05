@@ -5,12 +5,8 @@ export function useToast() {
   const ctx = useContext(ToastContext)
   if (!ctx) {
     return {
-      error: () => {
-        /* no provider */
-      },
-      success: () => {
-        /* no provider */
-      },
+      error: () => undefined,
+      success: () => undefined,
     }
   }
   return {

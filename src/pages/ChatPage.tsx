@@ -66,7 +66,7 @@ export function ChatPage() {
 
   const [compose, setCompose] = useState(false)
 
-  async function onLogout() {
+  async function handleLogout() {
     try {
       await logoutServer()
     } finally {
@@ -78,23 +78,13 @@ export function ChatPage() {
     <div className="flex h-[100dvh] flex-col bg-page">
       <div className="flex min-h-0 flex-1">
         <div
-          className={`${mobilePane === 'sidebar' ? 'flex' : 'hidden'} h-full w-full shrink-0 md:flex md:w-80`}
+          className={`${mobilePane === 'sidebar' ? 'flex' : 'hidden'} h-full w-full shrink-0 md:flex md:w-[min(320px,100%)]`}
         >
-          <div className="flex h-full w-full flex-col">
-            <div className="flex items-center justify-end border-b border-border bg-sidebar px-4 py-2 md:justify-end">
-              <button
-                type="button"
-                className="text-xs text-muted hover:text-white"
-                onClick={() => void onLogout()}
-              >
-                Log out
-              </button>
-            </div>
-            <Sidebar
-              onCompose={() => setCompose(true)}
-              conversationsLoading={conversationsLoading}
-            />
-          </div>
+          <Sidebar
+            onCompose={() => setCompose(true)}
+            conversationsLoading={conversationsLoading}
+            onLogout={() => void handleLogout()}
+          />
         </div>
         <div
           className={`${mobilePane === 'thread' ? 'flex' : 'hidden'} min-h-0 min-w-0 flex-1 flex-col md:flex`}

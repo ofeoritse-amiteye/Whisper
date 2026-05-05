@@ -34,7 +34,6 @@ async function decryptPage(
   return Promise.all(page.map((m) => decryptOne(m, currentUserId, privateKey)))
 }
 
-/** API returns newest-first per page; flatten to chronological (oldest → newest for chat UI). */
 export function flattenMessagesChronological(
   pages: ChatMessageView[][],
 ): ChatMessageView[] {

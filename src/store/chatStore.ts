@@ -17,7 +17,6 @@ interface ChatState {
   setWsConnected: (v: boolean) => void
   wsReconnecting: boolean
   setWsReconnecting: (v: boolean) => void
-  /** FIFO temp ids per peer for matching WebSocket echoes */
   pendingOutgoing: Record<string, string[]>
   pushPendingOutgoing: (peerId: string, tempId: string) => void
   popPendingOutgoing: (peerId: string) => string | undefined

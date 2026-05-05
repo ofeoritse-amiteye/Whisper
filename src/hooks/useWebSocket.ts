@@ -35,7 +35,7 @@ export function useWebSocket(
         await removeOutbox(e.id)
         void queryClient.invalidateQueries({ queryKey: ['conversations'] })
       } catch {
-        // keep in outbox
+        void 0
       }
     }
   }, [queryClient])
@@ -86,7 +86,6 @@ export function useWebSocket(
           msgHandlerRef.current(apiMsg, { fromSelf, matchedTempId })
           void queryClient.invalidateQueries({ queryKey: ['conversations'] })
         }
-        // 'error' events ignored in UI for now
       },
       (ev, uid) => {
         setOnline(uid, ev === 'user.online')

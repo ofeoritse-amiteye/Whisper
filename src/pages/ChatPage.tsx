@@ -1,3 +1,4 @@
+import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { revokeSessionOnServer } from '../api/auth'
@@ -5,7 +6,7 @@ import { MessageThread } from '../components/chat/MessageThread'
 import { NewConversationModal } from '../components/chat/NewConversationModal'
 import { Sidebar } from '../components/chat/Sidebar'
 import { useConversations } from '../hooks/useConversations'
-import { useMessages } from '../hooks/useMessages'
+import { mergeWsMessageIntoCache, useMessages } from '../hooks/useMessages'
 import { useSendMessage } from '../hooks/useSendMessage'
 import { useWebSocket } from '../hooks/useWebSocket'
 import type { ApiMessage } from '../types/api'
@@ -14,6 +15,7 @@ import { useAuthStore } from '../store/authStore'
 
 export function ChatPage() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const setLoggingOut = useAuthStore((s) => s.setLoggingOut)
   const clear = useAuthStore((s) => s.clear)
   const { isLoading: conversationsLoading } = useConversations()
@@ -29,26 +31,30 @@ export function ChatPage() {
 
   const {
     messagesChronological,
-    appendIncoming,
-    replaceOptimistic,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading: messagesLoading,
     addOptimistic,
+    replaceOptimistic,
     markOptimisticFailed,
     removeMessageById,
   } = useMessages(activeId)
 
   const wsHandler = useCallback(
     async (msg: ApiMessage, opts: { fromSelf: boolean; matchedTempId?: string }) => {
-      if (opts.fromSelf && opts.matchedTempId) {
-        await replaceOptimistic(opts.matchedTempId, msg)
-      } else {
-        await appendIncoming(msg)
-      }
+      const { user, privateKey } = useAuthStore.getState()
+      const uid = user?.id
+      if (!uid || !privateKey) return
+      await mergeWsMessageIntoCache({
+        queryClient,
+        userId: uid,
+        privateKey,
+        msg,
+        matchedTempId: opts.fromSelf ? opts.matchedTempId : undefined,
+      })
     },
-    [appendIncoming, replaceOptimistic],
+    [queryClient],
   )
 
   const { sendMessage } = useWebSocket(wsHandler)
